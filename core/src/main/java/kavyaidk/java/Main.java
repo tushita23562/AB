@@ -15,8 +15,6 @@ public class Main extends ApplicationAdapter {
     Texture leveln, level1, level2, level3;
     Music music;
     OrthographicCamera camera;
-
-    // Class-level variables for birds and slingshot
     RedBird red, red1;
     YellowBird yellow;
     WhiteBird white;
@@ -199,11 +197,9 @@ public class Main extends ApplicationAdapter {
         }
         return k;
     }
-
     @Override
     public void dispose() {
         batch.dispose();
         image.dispose();
-        // Dispose of other assets as necessary
     }
 }
