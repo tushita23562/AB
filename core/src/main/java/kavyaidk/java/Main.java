@@ -3,15 +3,20 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.math.Vector3;
+
 import static com.badlogic.gdx.Gdx.graphics;
 
 public class Main extends ApplicationAdapter {
+
     SpriteBatch batch;
-    Texture image, quit, levels, bg, back, pause, settings, credits, play, menu, parade, fly;
+    Texture image, quit, levels, bg, back, pause, settings, credits, play, menu, parade, fly,winScreen;
     Texture leveln, level1, level2, level3;
     Music music;
     OrthographicCamera camera;
@@ -19,10 +24,16 @@ public class Main extends ApplicationAdapter {
     YellowBird yellow;
     WhiteBird white;
     Slingshot sling;
+    smallPig small;
+    mediumPig medium;
+    largePig large;
+    Wood woodenBlock;
+    FitViewport viewport;
 
     boolean isLevel1Unlocked = true;
     boolean isLevel2Unlocked = false;
     boolean isLevel3Unlocked = false;
+
     public void create(){
         batch = new SpriteBatch();
         red = new RedBird(batch);
@@ -30,6 +41,9 @@ public class Main extends ApplicationAdapter {
         yellow = new YellowBird(batch);
         white = new WhiteBird(batch);
         sling = new Slingshot(batch);
+        small=new smallPig(batch);
+        woodenBlock=new Wood(batch);
+        winScreen=new Texture("winScreen.png");
         image = new Texture("libgdx.png");
         quit = new Texture("quit.png");
         pause = new Texture("pause.png");
@@ -50,119 +64,140 @@ public class Main extends ApplicationAdapter {
         music.setLooping(true);
         music.setVolume(.5f);
         music.play();
+        viewport=new FitViewport(70,50);
     }
-    public void render() {
-        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+
+    public void resize(int width,int height){
+        viewport.update(width,height,true);
+    }
+
+    public void render(){
+        ScreenUtils.clear(Color.BLACK);
+        viewport.apply();
+        batch.setProjectionMatrix(viewport.getCamera().combined);
         int m=input();
         batch.begin();
         if (m==0){
-            batch.draw(image, 0, 0, graphics.getWidth(), graphics.getHeight());
-            batch.draw(menu, 170, 250, 100, 50);
-            batch.draw(play, 280, 250, 100, 50);
-            batch.draw(parade, 390, 250, 100, 50);
+            batch.draw(image, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+            batch.draw(menu, 17, 25, 10, 5);
+            batch.draw(play, 28, 25, 10, 5);
+            batch.draw(parade, 39, 25, 10, 5);
         }
         if (m==1){
-            batch.draw(levels, 0, 0, graphics.getWidth(), graphics.getHeight());
-            batch.draw(level1, 180, 200, 50, 50);
-            batch.draw(leveln, 280, 200, 50, 50);
-            batch.draw(leveln, 380, 200, 50, 50);
-            batch.draw(back, 280, 50, 50, 50);
+            batch.draw(levels, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+            batch.draw(level1, 20, 20, 5, 5);
+            batch.draw(leveln, 30, 20, 5, 5);
+            batch.draw(leveln, 40, 20, 5, 5);
+            batch.draw(back, 30, 10, 5, 5);
             if (isLevel2Unlocked) {
-                batch.draw(level2, 280, 200, 50, 50);
+                batch.draw(level2, 30, 20, 5, 5);
             }
             if (isLevel3Unlocked) {
-                batch.draw(level3, 380, 200, 50, 50);
+                batch.draw(level3, 40, 20, 5, 5);
             }
         }
         if (m==2){
-            batch.draw(fly, 0, 0, graphics.getWidth(), graphics.getHeight());
-            batch.draw(back, 10, graphics.getHeight()-40,30,30);
+            batch.draw(fly, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+            batch.draw(back, 1, viewport.getWorldHeight()-6,5,5);
         }
         if (m==3){
-            batch.draw(settings, 0, 0, graphics.getWidth(), graphics.getHeight());
-            batch.draw(back, 10, graphics.getHeight()-40,30,30);
+            batch.draw(settings, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+            batch.draw(back, 1, viewport.getWorldHeight()-6,5,5);
         }
-        if (m==4){
-            batch.draw(bg, 0, 0, graphics.getWidth(), graphics.getHeight());
-            red.render(10, 60, 40, 50);
-            sling.render(10, 60, 80, 80);
-            batch.draw(pause, 10, graphics.getHeight() - 60, 50, 50);
+        if (m==4){ //level 1 screen
+            batch.draw(bg, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+            red.render(1, 7, 4, 5);
+            red.render(6, 7, 4, 5);
+            sling.render(8, 6, 8, 8);
+            small.render(60,17,4,5);
+            woodenBlock.render(60,12,5,5);
+            woodenBlock.render(60,7,5,5);
+            //medium.render(600,200,40,50);
+            batch.draw(pause, 1, viewport.getWorldHeight() - 6, 5, 5);
         }
-        if (m==5){
-            batch.draw(bg, 0, 0, graphics.getWidth(), graphics.getHeight());
-            yellow.render(10, 60, 40, 50);
-            sling.render(10, 60, 80, 80);
-            batch.draw(pause, 10, graphics.getHeight() - 60, 50, 50);
+        if (m==5){ //level 2 screen
+            batch.draw(bg, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+            yellow.render(1, 7, 4, 5);
+            red.render(6, 7, 4, 5);
+            sling.render(8, 6, 8, 8);
+            batch.draw(pause, 1, viewport.getWorldHeight() - 6, 5, 5);
         }
-        if (m==6){
-            batch.draw(bg, 0, 0, graphics.getWidth(), graphics.getHeight());
-            white.render(10, 60, 40, 50);
-            sling.render(10, 60, 80, 80);
-            batch.draw(pause, 10, graphics.getHeight() - 60, 50, 50);
+        if (m==6){//level 3 screen
+            batch.draw(bg, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+            white.render(1, 7, 4, 5);
+            yellow.render(6,7,4,5);
+            red.render(11, 7, 3, 5);
+            sling.render(13, 6, 8, 8);
+            batch.draw(pause, 1, viewport.getWorldHeight() - 6, 5, 5);
         }
         if (m==7 || m==8 || m==9){
-            batch.draw(quit, 0, 0, graphics.getWidth(), graphics.getHeight());
+            batch.draw(quit, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
         }
         if (m==10){
-            batch.draw(credits, 0, 0, graphics.getWidth(), graphics.getHeight());
-            batch.draw(back, 10, graphics.getHeight()-40,30,30);
+            batch.draw(credits, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+            batch.draw(back, 1, viewport.getWorldHeight()-4,3,3);
+        }
+        if(m==11){ //winning screen
+            batch.draw(winScreen,0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
         }
         batch.end();
     }
     int k=0;
-    private int input() {
-        int mouseX = Gdx.input.getX();
-        int mouseY = graphics.getHeight() - Gdx.input.getY();
+    private int input(){
+        Vector3 worldCoordinates = viewport.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+        float mouseX=worldCoordinates.x;
+        float mouseY=worldCoordinates.y;
+
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && k==0){ // home screen
-            if (mouseX >= 280 && mouseX <= 380 && mouseY >= 250 && mouseY <= 300){
+            if (mouseX>=28 && mouseX<=38 && mouseY>=25 && mouseY<=30){
                 k=1;
                 return k;
             }
-            if (mouseX>=390 && mouseX<=490 && mouseY>=250 && mouseY<=300){
+            if (mouseX>=39 && mouseX<=49 && mouseY>=25 && mouseY<=30){
                 k=2;
                 return k;
             }
-            if (mouseX>=170 && mouseX<=270 && mouseY>=250 && mouseY<=300){
+            if (mouseX>=17 && mouseX<=27 && mouseY>=25 && mouseY<=30){
                 k=3;
                 return k;
             }
         }
-        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && k==1){ // level 1 screen
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && k==1){ // levels screen
             if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
-                if (mouseX>=280 && mouseX<=330 && mouseY>=50 && mouseY<=100){
+                if (mouseX>=30 && mouseX<=35 && mouseY>=10 && mouseY<=15){
                     k=0;
                     return k;
                 }
-                if(mouseX>=180 && mouseX<=230 && mouseY>=200 && mouseY<=250 && isLevel1Unlocked){
+                if(mouseX>=20 && mouseX<=25 && mouseY>=20 && mouseY<=25 && isLevel1Unlocked){
                     k=4;
                     return k;
                 }
-                if(mouseX>=280 && mouseX<=330 && mouseY>=200 && mouseY<=250 && isLevel2Unlocked){
+                if(mouseX>=30 && mouseX<=35 && mouseY>=20 && mouseY<=25 && isLevel2Unlocked){
                     k=5;
                     return k;
                 }
-                if(mouseX>=380 && mouseX<=430 && mouseY>=200 && mouseY<=250 && isLevel3Unlocked){
+                if(mouseX>=40 && mouseX<=45 && mouseY>=20 && mouseY<=25 && isLevel3Unlocked){
                     k=6;
                     return k;
                 }
             }
         }
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && k==3){ // menu options
-            if (mouseX>=150 && mouseX<=420 && mouseY>=250 && mouseY<=300){
+            if (mouseX>=15 && mouseX<=42 && mouseY>=25 && mouseY<=30){
                 music.setVolume(.5f);
             }
-            if (mouseX>=150 && mouseX<=320 && mouseY>=200 && mouseY<=250){
+            if (mouseX>=15 && mouseX<=32 && mouseY>=20 && mouseY<=25){
                 music.setVolume(0f);
             }
-            if (mouseX>=150 && mouseX<=400 && mouseY>=130 && mouseY<=180){
+            if (mouseX>=15 && mouseX<=40 && mouseY>=13 && mouseY<=18){
                 k=10;
                 return k;
             }
         }
         if(k==4 && Gdx.input.isKeyPressed(Input.Keys.ENTER)){
             //enter will be replaced with level completion logic later
-            isLevel2Unlocked=true;
-            k=1;
+            isLevel2Unlocked = true;
+            k = 1; //1 to 11
         }
         if(k==5 && Gdx.input.isKeyPressed(Input.Keys.ENTER)){
             //enter will be replaced with level completion logic later
@@ -173,24 +208,31 @@ public class Main extends ApplicationAdapter {
             //enter will be replaced with level completion logic later
             k=1;
         }
-        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && (k==2 || k==3 || k==10)){ //home button
-            if (mouseX>=10 && mouseX<=60 && mouseY>= graphics.getHeight()-40 && mouseY<= graphics.getHeight()-10){
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && (k==3)){ //home button
+            if (mouseX>=1 && mouseX<=6 && mouseY>= viewport.getWorldHeight()-6 && mouseY<= viewport.getWorldHeight()-1){
                 k=0;
                 return k;
             }
         }
+        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && (k==2||k==10)){
+            if(mouseX>=1 && mouseX<=6 && mouseY>= viewport.getWorldHeight()-6 && mouseY<= viewport.getWorldHeight()-1){
+                k=0;
+                return k;
+            }
+        }
+
         if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && (k==4||k==5||k==6)){
-            if(mouseX>=10 && mouseX<=60 && mouseY>= graphics.getHeight()-60 && mouseY<= graphics.getHeight()-10){
+            if(mouseX>=1 && mouseX<=6 && mouseY>= viewport.getWorldHeight()-6 && mouseY<= viewport.getWorldHeight()-1){
                 k=k+3;
                 return k;
             }
         }
         if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && (k==7||k==8||k==9)){
-            if (mouseY>=200 && mouseY<=250){
-                if (mouseX>=100 && mouseX<=300){
+            if (mouseY>=20 && mouseY<=25){
+                if (mouseX>=10 && mouseX<=30){
                     k=k-3;
                 }
-                if (mouseX>=350 && mouseX<=500){
+                if (mouseX>=35 && mouseX<=50){
                     k=0;
                 }
             }

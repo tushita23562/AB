@@ -28,5 +28,6 @@ settings.png
 slingshot.png
 small.png
 white.png
+winScreen.png
 wood.png
 yellow.png
